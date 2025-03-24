@@ -1,16 +1,13 @@
 from typing import List
-from dataclasses import dataclass
-from pydantic import
+from pydantic import BaseModel
 
 
-@dataclass
-class Description(Model):
+class Description(BaseModel):
     short: str
     people: List[str]
     long_description: str
 
 
-@dataclass
-class Entities:
+class Entities(BaseModel):
     people: List[str]
     objects: List[str]
