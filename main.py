@@ -1,14 +1,14 @@
 import argparse
-import os
 import asyncio
+import os
 import pathlib
 
+import fsspec
 from configobj import ConfigObj
 from dotenv import load_dotenv
 
-from api.google_vision_api import GoogleVisionAPI
-from api.gpt4v_api import GPT4VAPI
-from data_persistence import load_progress, init_results
+import prototype_utils
+from data_persistence import init_results, load_progress
 from image_processor import process_images
 from logger import setup_logging
 
@@ -59,11 +59,15 @@ async def main():
     args = parse_args()
     config = load_config(args.config)
     config = merge_config_with_args(config, args)
-    api = GPT4VAPI() if config['ai_api'] == 'openai' else GoogleVisionAPI()
     progress = load_progress() if config.get('resume', False) else None
     await init_results()
-    await process_images(config['image_folder'], api,
-                         config['short_description_length'], progress)
+    context = prototype_utils.load_context()
+    fs = fsspec.filesystem("local")
+    await process_images(fs,
+                         "file://"+os.path.abspath(config['image_folder']),
+                         context,
+                         config['short_description_length'],
+                         progress)
 
 if __name__ == '__main__':
     asyncio.run(main())
