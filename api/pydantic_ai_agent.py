@@ -59,4 +59,4 @@ class ImageDescriber:
         description = response.data
         if not description:
             raise AiProcessingException("No description generated.")
-        return Description.from_json(description)
+        return description
