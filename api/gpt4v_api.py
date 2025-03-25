@@ -1,13 +1,11 @@
 import logging
 import re
-
 from openai import AsyncOpenAI
-
 from imageutils.convert import encode_image
-
 from .base_api import BaseAPI
 from .exceptions import AiProcessingException
 from .descriptions import Description
+from .context import Context
 from .system_prompt import description_system_prompt
 
 logger = logging.getLogger(__name__)  # Use the existing logger
@@ -23,13 +21,16 @@ class GPT4VAPI(BaseAPI):
     def append_context(self, context: Context):
         self.context = context
 
-   async def generate_description(self, image_file):
+    async def generate_description(self, image_file):
         base64_image = encode_image(image_file)
         response = await self.api_sdk.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": description_system_prompt},
                 {"role": "user", "content": [
+                    {
+                        type:
+                    }
                     {
                         "type": "image_url",
                         "image_url": {
@@ -38,6 +39,7 @@ class GPT4VAPI(BaseAPI):
                     }],
                  }
             ],
+            response_format=Description,
             max_tokens=400
         )
         description = response.choices[0].message.content
