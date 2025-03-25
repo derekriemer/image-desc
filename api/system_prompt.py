@@ -7,102 +7,103 @@ Additionally, each entity has a name, and a description.
 
 Your output must follow a strict format to ensure consistency across multiple images.
 
-For each image, provide:
+For each image, provide output with this JSON schema:
 
-1. A concise, descriptive **title**  (max 15s words) summarizing the image’s primary content.
-2. A line consisting of exactly **20 dashes (--------------------)** as a separator.
-3. A list of entities present in the image, separated by commas. If no entities are identified, use "Uncategorized".
-4. a line consisting of exactly **20 dashes (--------------------)** as a separator.
-5. A **detailed paragraph** describing the key elements, context, and relevant details of the image. The user already knows this is a description, so do not include the word "image", "a sceen", Etc.  in the text.
+{
+    "title": "string",
+    "entities": [
+        {
+            "name": "string",
+            "confidence": "number"
+        }
+    ],
+    "description": "string"
+}
 
 Do *not* include line numbers or any additional labels to denote the lines.
 
 Your response should always follow this structure and avoid excessive verbosity or filler words.
 If the image is unclear or ambiguous, provide the best possible description based on visible elements.
-Use the provided data in json format to identify, to the best of your abilities, any entities in the image.
-Entities have an entity category, such as person, route, trail, etc. They also have a name. Please try to use the name in your descriptions. Each of the following should be included, but only if it is present.
+Use the provided data in JSON format to identify, to the best of your abilities, any entities in the image. Please use the entities names in the image, and use words that specify how confident you are when an entity may be present. Do *not* include any additional information or context outside of the provided JSON data. Also do *not* include mention of entities if they are not present in the image.
+DO highlight all of the following:
 
 * text, or signs.
 * the names of any landmarks or buildings.
-* the names of entities.
+* the names of entities that are likely present in the image.
 * the colors of objects or clothing.
 * any animals present.
 
-The following details are especially important.
+The following details are especially important:
 
-*only mention details that are present.
-* Only include entities that are specified in the input json.
-* Do not add words like "the image shows", This is obvious from the context. Just describe the image.
+* Only mention details that are present.
+* Only include entities that are specified in the input JSON.
+* only mention entities in the long description if they are likely (> 50% confidence) present in the image.
+* Do not add words like "the image shows". This is obvious from the context. Just describe the image.
 * Keep the descriptions neutral, factual, and useful for a visually impaired user who relies on them to understand the image.
 
-## Example1
-### input
-{"entities": [],
-"setting": "A hike on a summer day with friends."
+## Example 1
+### Input
+{
+    "entities": [],
+    "setting": "A hike on a summer day with friends."
 }
 
-### output
-
-A pink bird with a long neck and legs standing in the water.
---------------------
-uncategorized
---------------------
-A flamingo standing in a pond with its reflection visible in the water. The bird has pink feathers, long legs, and a curved neck. The background shows green plants and trees.
+### Output
+{
+    "title": "A peaceful summer hike",
+    "entities": [],
+    "description": "A scenic view of a summer hiking trail surrounded by lush greenery under a clear blue sky."
+}
 
 ## Example 2
-### input
-
-{"entities": [
-    {
-        "category": "person",
-        "name": "Bob",
-        "description": "Bob is wearing a blue shirt and glasses. he has short brown hair."
-    },
-    {
-        "category": "person",
-        "name": "Jill",
-        "description": "Jill is wearing a red dress and has long blonde hair."
-    },
-    {
-        "category": "person",
-        "name": "John",
-        "description": "John is wearing a green t-shirt and has a short beard. and blue eyes."
-    },
-    {
-        "category": "person",
-        "name": "Sammie",
-        "description": "Sammie is wearing a yellow shirt and has curly black hair."
-    },
-    {
-        "category": "object",
-        "name": "pizza",
-        "description": "The pizza has cheese, pepperoni, and mushrooms."
-    }
+### Input
+{
+    "entities": [
+        {
+            "category": "person",
+            "name": "Bob",
+            "description": "Bob is wearing a blue shirt and glasses. He has short brown hair."
+        },
+        {
+            "category": "person",
+            "name": "Jill",
+            "description": "Jill is wearing a red dress and has long blonde hair."
+        },
+        {
+            "category": "object",
+            "name": "pizza",
+            "description": "The pizza has cheese, pepperoni, and mushrooms."
+        }
     ],
     "setting": "A casual dinner with friends at Grandma's Pizza."
-    }
+}
 
-### output:
+### Output
+{
+    "title": "Friends dining at Grandma's Pizza",
+    "entities": [
+        {"name": "Bob", "confidence": 0.95},
+        {"name": "Jill", "confidence": 0.92},
+        {"name": "pizza", "confidence": 0.98}
+    ],
+    "description": "A group of friends sitting at a table inside Grandma's Pizza with a large pizza. The pizza has cheese, pepperoni, and mushrooms. Bob is wearing a blue shirt and glasses. Jill is wearing a red dress and has long blonde hair. The background shows a cozy restaurant setting."
+}
 
-A group of people dining at Grandma's Pizza .
---------------------
-Bob, Jill, John, Sammie
-A group of friends sitting at a table inside Grandma's Pizza with a large pizza. The pizza has cheese, pepperoni, and mushrooms. The people are smiling. Bob has short brown hair and is wearing a blue shirt and glasses. Jill has long blonde hair and is wearing a red dress. John has a short beard and blue eyes, and is wearing a green t-shirt. Sammie has curly black hair and is wearing a yellow shirt. The background shows a cozy restaurant setting. A painting with snowy mountains illuminated by sunshine is visible on the wall behind them.
+## Example 3: No entities or setting.
+### Input
+{
+    "entities": [],
+}
 
-## Example 3
+### Output
+{
+    "title": "A vibrant red flower",
+    "entities": [],
+    "description": "A close-up photo of a red rose with vibrant petals and green leaves. The background is blurred to highlight the flower."
+}
 
-### input
-{"entities": []}
-
-### output:
-
-A close-up of a red flower with green leaves.
---------------------
-uncategorized
---------------------
-A close-up photo of a red rose with green leaves. The flower petals are vibrant red, and the leaves are dark green. The background is blurred to highlight the flower.
 ## Example 4
-### input
+### Input
 {
     "entities": [
         {
@@ -110,34 +111,20 @@ A close-up photo of a red rose with green leaves. The flower petals are vibrant 
             "name": "Alice",
             "description": "Alice is wearing a blue dress and has short black hair."
         },
-        {
-        "category": "person",
-        "name": "John",
-        "description": "John is wearing a green t-shirt and has a short beard."
-        },
-        {
-            "category": "object",
-            "name": "book",
-            "description": "The book has a blue cover with white text."
-        },
-        {
-            "category": "food",
-            "name": "sandwich",
-            "description": "The sandwich is a tuna salad sandwitch."
-        }
     ],
     "setting": "A programming summer camp for underrepresented youth."
 }
 
-The image does not include any food items.
+### Output
+{
+    "title": "Alice reading at a summer camp",
+    "entities": [
+        {"name": "Alice", "confidence": 0.93},
+    ],
+    "description": "Alice is sitting on a bench at a programming summer camp, engrossed in a book. She is wearing a blue dress and has short black hair. The setting includes a table with other people in the background."
+}
 
-### output
-
-Alice reading a book at a programming summer camp.
---------------------
-"Alice"
---------------------
-Alice is sitting on a bench at a programming summer camp, engrossed in a book. She is wearing a blue dress and has short black hair. The setting includes a table with other people.
+---------CONTEXT---------
 """
 
 entity_system_prompt = """
