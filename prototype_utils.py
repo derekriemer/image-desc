@@ -1,6 +1,8 @@
 from api.context import Context
 from csv import DictReader
 
+logger = logging.getLogger(__name__)
+
 
 def load_context():
     # For the prototype, hardcode context.csv. I will be using a context builder for this for the real app.
