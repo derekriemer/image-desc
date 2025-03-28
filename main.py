@@ -1,5 +1,7 @@
 import argparse
 import asyncio
+import sys
+import logging
 import os
 import pathlib
 
@@ -10,7 +12,8 @@ from dotenv import load_dotenv
 import prototype_utils
 from data_persistence import init_results, load_progress
 from image_processor import process_images
-from logger import setup_logging
+
+logger = None
 
 
 def parse_args():
@@ -50,6 +53,30 @@ def merge_config_with_args(config, args):
     return config
 
 
+def setup_logging():
+    global logger
+    log_filename = 'image_describer.log'
+    OLD_LOG_FILE_NAME = 'image_describer-old.log'
+    if os.path.exists(log_filename):
+        if os.path.exists(OLD_LOG_FILE_NAME):
+            os.remove(OLD_LOG_FILE_NAME)
+        os.rename(log_filename, OLD_LOG_FILE_NAME)
+    logging.basicConfig(filename=log_filename, level=logging.INFO,
+                        format='%(asctime)s - %(module)s - %(levelname)s - %(message)s', filemode="w")
+    logger = logging.getLogger(__name__)
+    sys.excepthook = handle_exception
+
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    if not logger:
+        return
+    logger.error("Uncaught exception", exc_info=(
+        exc_type, exc_value, exc_traceback))
+
+
 async def main():
     base_dir = pathlib.Path(os.path.dirname(os.path.realpath(__file__)))
     os.chdir((base_dir))
@@ -70,4 +97,4 @@ async def main():
                          progress)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asynciosetup_.run(main())
