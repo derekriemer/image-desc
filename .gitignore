@@ -89,6 +89,11 @@ dmypy.json
     
 # Cython debug symbols
 cython_debug/
+
+## local mods
+
+#Redon't commit the virtualenv
+venv/
 #log and configs.
 *.log
 config.ini
