@@ -93,8 +93,8 @@ async def main():
     await process_images(fs,
                          "file://"+os.path.abspath(config['image_folder']),
                          context,
-                         config['short_description_length'],
-                         progress)
+                         progress,
+                         )
 
 if __name__ == '__main__':
-    asynciosetup_.run(main())
+    asyncio.run(main())

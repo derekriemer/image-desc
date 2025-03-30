@@ -33,6 +33,7 @@ async def process_images(
         context: Context,
         progress,
         batch_size=5):
+    print(batch_size, "yo")
     image_paths = []
     imageDescriber = ImageDescriber(context)
     for root, _, files in fs.walk(path):
@@ -48,7 +49,7 @@ async def process_images(
             try:
                 result = await process_image(image_path, imageDescriber)
                 if result:
-                    await save_results([result])
+                    await save_results(image_path, [result])
                     await log_progress(i + batch.index(image_path) + 1)
             except Exception as e:
                 logging.exception(

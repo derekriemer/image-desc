@@ -1,5 +1,7 @@
-from api.context import Context
+import logging
 from csv import DictReader
+
+from api.context import Context
 
 logger = logging.getLogger(__name__)
 

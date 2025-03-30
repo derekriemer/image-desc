@@ -1,4 +1,5 @@
 description_system_prompt = """
+<task>
 You are an expert at analyzing images and creating structured, detailed descriptions for blind people.
 You are given an image and a context that explains the setting of the image.
 The context is a JSON object that contains information about the entities in the image, and possibly a setting in which the image was taken.
