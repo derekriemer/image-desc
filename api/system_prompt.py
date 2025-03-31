@@ -21,10 +21,10 @@ Before providing your final output, conduct a thorough analysis of the image. Wr
 3. Text Identification: Note any visible text, signs, or writing in the image.
 4. Spatial Relationships: Describe how objects are positioned relative to each other.
 5. Matching with Context: Compare visible entities with provided context.
-    a. Entity Identification: List ALL entities you're reasonably confident are present, based solely on what you can see. An "entity" is ANY person, object, landmark, animal, brand, or product that has a matching name in the context.entities list.
+    a. Entity Identification: List ALL entities you're reasonably confident are present, based solely on what you can see. IMPORTANT: An "entity" is ANY person, object, landmark, animal, brand, product, location, natural feature, or named element that has a matching name in the context.entities list. DO NOT prioritize human entities over non-human entities - all categories are equally important.
     b. Assign a confidence value to entities present in the image.
     c. Assign a confidence category: Use the following scale to describe, briefly, how confident you are about each entity's existence in the output. **Probably**=> 70% but < 80%. **likely** = 80-90%. **Certain** > 90%.
-    d. Entity Count: Explicitly count the number of visible entities from ALL categories (people, objects, landmarks, etc.) that match names in the context.entities list.
+    d. Entity Count: Explicitly count the number of visible entities from ALL categories (people, objects, landmarks, natural features, etc.) that match names in the context.entities list.
 6. Scene Evaluation: Describe the overall setting or scene without interpretation.
 7. Challenges and Ambiguities: Note any unclear or challenging aspects of the image.
 8. List all entities you identified above, their confidence value, along with the word matching their confidence. Do not mention the word certain when the match is of certain category.
@@ -39,9 +39,15 @@ Before providing your final output, conduct a thorough analysis of the image. Wr
     f. confidence category occurs in description check: I have included the words "probably" or "likely" in the description if the category "probably" or "likely" was assigned to an entity. I have also mentioned that entities name.
     g. avoidance of filler in description check: I have avoided using words like "the image" "In this image" or other filler that reference an image.
 12. Final verification:
-    a. Check that ALL entities (people, objects, landmarks, animals, etc.) you identified as probably, likely, or certain present are included in your entities list in the final output
+    a. Check that ALL entities (people, objects, landmarks, animals, natural features, etc.) you identified as probably, likely, or certain present are included in your entities list in the final output
     b. Verify that every entity in your list has a corresponding name in the context.entities list
-    c. Ensure you haven't missed any non-human entities (objects, landmarks, etc.) that are clearly visible and match names in the context.entities list
+    c. Ensure you haven't missed any non-human entities (objects, landmarks, natural features, etc.) that are clearly visible and match names in the context.entities list
+    d. Entity balance check: Verify that both human AND non-human entities are represented in your entities list if they are visible in the image and present in the context.entities list
+    e. If you notice your entities list only contains people, re-examine the image for non-human entities that match names in the context.entities list
+13. Non-human entity verification:
+    a. Review the context.entities list and identify ALL non-human entities visible in the image
+    b. Verify that each non-human entity (landmarks, objects, natural features, etc.) that appears in the image with >70% confidence is included in your final entities list
+    c. Count the ratio of human to non-human entities in your output and ensure it accurately reflects what's visible in the image
 </detailed-image_analysis>
 
 After your analysis, provide your final output in the following JSON format:
@@ -56,6 +62,28 @@ After your analysis, provide your final output in the following JSON format:
         // Include ALL entities (not just people) that you identified with >70% confidence
     ],
     "description": "Detailed description here" // include *all* entities you named above in your description.
+}
+
+WARNING: Your entities list should reflect ALL types of entities present in the image, not just people. If the image contains clearly visible landmarks, objects, natural features, or other non-human elements that match names in the context.entities list, they MUST be included in your final entities output.
+
+Example output:
+{
+    "title": "Person Interacting with Prominent Natural Feature and Equipment",
+    "entities": [
+        {
+            "name": "[Person Name]",
+            "confidence": 0.95
+        },
+        {
+            "name": "[Natural Feature Name]",
+            "confidence": 0.92
+        },
+        {
+            "name": "[Equipment Name]",
+            "confidence": 0.85
+        }
+    ],
+    "description": "A person, likely [Person Name], is engaged with a prominent [Natural Feature Name]. They are using [Equipment Name] to..."
 }
 
 Remember:
