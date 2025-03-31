@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class Person(BaseModel):
     name: str
-    confidence: str
+    confidence: float
 
 
 class Description(BaseModel):
