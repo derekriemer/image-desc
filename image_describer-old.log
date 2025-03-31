@@ -1,2 +1,0 @@
-2025-03-29 19:52:10,785 - _client - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-29 19:52:10,794 - log - INFO - Processed 1 images
