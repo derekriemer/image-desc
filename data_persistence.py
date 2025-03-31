@@ -1,6 +1,7 @@
 import asyncio
-from typing import List
+import logging
 import os
+from typing import List
 
 from aiofiles import open as aio_open
 
@@ -9,6 +10,8 @@ from api.descriptions import Description
 file_lock = asyncio.Lock()
 
 RESULTS_FILE = 'results.csv'
+
+logger = logging.getLogger(__name__)
 
 
 async def init_results():
@@ -33,6 +36,7 @@ async def save_results(fn: str, results: List[Description]):
     async with file_lock:
         async with aio_open(RESULTS_FILE, 'a', newline='') as csvfile:
             for result in filter(None, results):
+                logger.info(f"Saving result: {result}")
                 await csvfile.write(
                     F'"{sanatize(fn)}","{sanatize(result.title)}","{sanatize(getPeople(result.people))}","{sanatize(result.long_description)}"\n')
 
