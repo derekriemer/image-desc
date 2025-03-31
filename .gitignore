@@ -96,5 +96,7 @@ cython_debug/
 venv/
 #log and configs.
 *.log
-*.csv
 config.ini
+# tools used for input or out.
+*.csv
+context.json
