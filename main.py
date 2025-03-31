@@ -21,8 +21,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Image Describer CLI Tool")
     parser.add_argument('--image-folder',
                         help='Path to the image folder')
-    parser.add_argument('--api', choices=[
-                        'gpt-4', 'google-vision'], help='API to use for image description')
+    parser.add_argument('--model', choices=[
+                        'gpt-4', 'google-vision'], help='Model to use for image description')
     parser.add_argument('--short-description-length', type=int,
                         default=15, help='Maximum number of words for short description')
     parser.add_argument('--config', default='config.ini',
@@ -43,8 +43,8 @@ def merge_config_with_args(config, args):
     """
     if args.image_folder:
         config['image_folder'] = args.image_folder
-    if args.api:
-        config['ai_api'] = args.api
+    if args.model:
+        config['model'] = args.model
     if args.short_description_length:
         config['short_description_length'] = args.short_description_length
     if args.resume is not None:
@@ -93,6 +93,7 @@ async def main():
     await process_images(fs,
                          "file://"+os.path.abspath(config['image_folder']),
                          context,
+                         config,
                          progress,
                          )
 

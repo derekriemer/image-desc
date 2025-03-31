@@ -5,6 +5,7 @@ from typing import IO
 import fsspec
 from PIL import Image
 from pydantic_ai import Agent, BinaryContent, RunContext
+from configobj import ConfigObj
 from pydantic_ai import models
 
 from .context import Context
@@ -24,21 +25,22 @@ class ImageDescriber:
     """
 
     @classmethod
-    def get_agent(cls) -> Agent:
+    def get_agent(cls, conf) -> Agent:
         agent = Agent(
-            model=("gpt-4o-mini" if models.ALLOW_MODEL_REQUESTS else "test"),
+            model=conf['model'],
             deps_type=Context,
+            model_settings={'temperature': 0.0, }
         )
 
         @agent.system_prompt
         def system_prompt(ctx: RunContext[Context]) -> str:
-            return description_system_prompt + "\n" + ctx.deps.model_dump_json()
+            return description_system_prompt.replace("{{CONTEXT}}", ctx.deps.model_dump_json())
 
         return agent
 
-    def __init__(self, deps: Context):
+    def __init__(self, deps: Context, conf: ConfigObj):
         self.deps = deps
-        self.agent = ImageDescriber.get_agent()
+        self.agent = ImageDescriber.get_agent(conf)
 
     def _get_mime_type(self, image_data: bytes) -> str:
         """ Gets a mimetype from a file using pillow. """

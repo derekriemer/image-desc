@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 from typing import IO
+from configobj import ConfigObj
 
 import fsspec
 
@@ -31,11 +32,12 @@ async def process_images(
         fs: fsspec.AbstractFileSystem,
         path: str,
         context: Context,
+        conf: ConfigObj,
         progress,
         batch_size=5):
     print(batch_size, "yo")
     image_paths = []
-    imageDescriber = ImageDescriber(context)
+    imageDescriber = ImageDescriber(context, conf)
     for root, _, files in fs.walk(path):
         for file in files:
             if file.lower().endswith(IMAGE_EXTENSIONS):
