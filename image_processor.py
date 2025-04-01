@@ -1,7 +1,6 @@
 import asyncio
 import logging
-import os
-from typing import IO
+import pathlib
 
 import fsspec
 from configobj import ConfigObj
@@ -35,17 +34,16 @@ async def process_images(
         path: str,
         context: Context,
         conf: ConfigObj,
-        progress,
-        batch_size=5):
+        progress):
     image_paths = []
     imageDescriber = ImageDescriber(context, conf)
     for root, _, files in fs.walk(path):
         for file in files:
             if file.lower().endswith(IMAGE_EXTENSIONS):
-                image_paths.append(os.path.join(root, file))
+                image_paths.append(str(pathlib.Path(root) / file))
     if progress:
         image_paths = image_paths[progress:]
-
+    batch_size = int(conf.get('batch_size', 5))
     for i in range(0, len(image_paths), batch_size):
         batch = image_paths[i:i + batch_size]
         for image_path in batch:

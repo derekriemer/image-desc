@@ -106,15 +106,6 @@ class ImageDescriber:
             logger.warning("Invalid resize_to value in config: %s", resize_to)
             return image_bytes
 
-        # Get current size in MB
-        current_size_mb = len(image_bytes) / (1024 * 1024)
-        logger.debug(f"Original image size: {current_size_mb:.2f}MB")
-
-        # Only resize if current size exceeds target
-        if current_size_mb <= target_size_mb:
-            logger.debug("Image already within size limits")
-            return image_bytes
-
         # Initialize shrinker and load image
         shrinker = ImageShrinker()
         img = Image.open(BytesIO(image_bytes))
@@ -126,7 +117,6 @@ class ImageDescriber:
         else:
             resized_img = shrinker.resize_to_filesize(img, target_size_mb)
 
-        # Convert back to bytes and verify size
         output = BytesIO()
         save_image(resized_img, output, quality=shrinker.quality)
         result_bytes = output.getvalue()

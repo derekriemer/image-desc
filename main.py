@@ -90,8 +90,10 @@ async def main():
     await init_results()
     context = prototype_utils.load_context()
     fs = fsspec.filesystem("local")
+    # We ot to be able to just print the path.as_uri but that's not windows compatable for fsspec.
     await process_images(fs,
-                         "file://"+os.path.abspath(config['image_folder']),
+                         "file://" +
+                         str(pathlib.Path(config['image_folder']).absolute()),
                          context,
                          config,
                          progress,

@@ -68,11 +68,11 @@ class ImageShrinker:
             logger.debug(
                 f"New size: {current_size}, Target: {target_size_bytes}, Ratio: {ratio}")
         # Save the resized image to a temp file for debugging if needed
-        if logger.isEnabledFor(logging.DEBUG):
-            os.makedirs("temp", exist_ok=True)
-            temp_filename = f"temp/{uuid.uuid4()}.jpg"
-            save_image(resized, temp_filename, quality=self.quality)
-            logger.debug(f"Saved debug image to {temp_filename}")
+        # if logger.isEnabledFor(logging.DEBUG):
+        #     os.makedirs("temp", exist_ok=True)
+        #     temp_filename = f"temp/{uuid.uuid4()}.jpg"
+        #     save_image(resized, temp_filename, quality=self.quality)
+        #     logger.debug(f"Saved debug image to {temp_filename}")
         return resized
 
     def resize_to_base64_size(self, img: Image.Image, target_size_mb: float) -> Image.Image:
@@ -124,11 +124,13 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s - %(levelname)s - %(message)s')
     logger.info("Starting the image resizing script")
-    fp = r"C:\Users\driem\quack\A person holding a  Do Not Touch  sign near construction equipment..jpg"
-    logger.info(F"raw size: {len(open(fp, 'rb').read())}")
-    logging.getLogger('PIL.TiffImagePlugin').setLevel(logging.WARNING)
-    img = Image.open(fp)
-    print("image format:", img.format)
-    # exit()
-    resizer = ImageShrinker(120)
-    img = resizer.resize_to_filesize(img, 5)
+fp = r"H:\.shortcut-targets-by-id\1oi8fqVS1-YbHQ3X_uAeRurvFPKeWDQvM\March 18; Vail Ice\derek\ice_2025_vail\various\20250318_102852.jpg"
+logger.info(F"raw size: {len(open(fp, 'rb').read())}")
+logger.info(F"raw b64 size: {len(base64.b64encode(open(fp, 'rb').read()))}")
+logging.getLogger('PIL.TiffImagePlugin').setLevel(logging.WARNING)
+img = Image.open(fp)
+print("image format:", img.format)
+# exit()
+resizer = ImageShrinker()
+img = resizer.resize_to_base64_size(img, 4.99)
+img = resizer.resize_to_filesize(img, 4.99)
