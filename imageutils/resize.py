@@ -124,13 +124,14 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s - %(levelname)s - %(message)s')
     logger.info("Starting the image resizing script")
-fp = r"H:\.shortcut-targets-by-id\1oi8fqVS1-YbHQ3X_uAeRurvFPKeWDQvM\March 18; Vail Ice\derek\ice_2025_vail\various\20250318_102852.jpg"
-logger.info(F"raw size: {len(open(fp, 'rb').read())}")
-logger.info(F"raw b64 size: {len(base64.b64encode(open(fp, 'rb').read()))}")
-logging.getLogger('PIL.TiffImagePlugin').setLevel(logging.WARNING)
-img = Image.open(fp)
-print("image format:", img.format)
-# exit()
-resizer = ImageShrinker()
-img = resizer.resize_to_base64_size(img, 4.99)
-img = resizer.resize_to_filesize(img, 4.99)
+    fp = r"H:\.shortcut-targets-by-id\1oi8fqVS1-YbHQ3X_uAeRurvFPKeWDQvM\March 18; Vail Ice\derek\ice_2025_vail\various\20250318_102852.jpg"
+    logger.info(F"raw size: {len(open(fp, 'rb').read())}")
+    logger.info(
+        F"raw b64 size: {len(base64.b64encode(open(fp, 'rb').read()))}")
+    logging.getLogger('PIL.TiffImagePlugin').setLevel(logging.WARNING)
+    img = Image.open(fp)
+    print("image format:", img.format)
+    # exit()
+    resizer = ImageShrinker()
+    img = resizer.resize_to_base64_size(img, 4.99)
+    img = resizer.resize_to_filesize(img, 4.99)
