@@ -2,17 +2,19 @@ import asyncio
 import logging
 import os
 from typing import IO
-from configobj import ConfigObj
 
 import fsspec
+from configobj import ConfigObj
 
 from api.context import Context
-from api.pydantic_ai_agent import ImageDescriber
 from api.exceptions import AiProcessingException
+from api.pydantic_ai_agent import ImageDescriber
 from data_persistence import save_results
 from log import log_progress
 
 file_lock = asyncio.Lock()
+
+logger = logging.getLogger(__name__)
 
 IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff')
 
@@ -35,7 +37,6 @@ async def process_images(
         conf: ConfigObj,
         progress,
         batch_size=5):
-    print(batch_size, "yo")
     image_paths = []
     imageDescriber = ImageDescriber(context, conf)
     for root, _, files in fs.walk(path):
