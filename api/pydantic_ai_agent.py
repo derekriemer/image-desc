@@ -1,12 +1,15 @@
 import logging
+from functools import reduce
 from io import BytesIO
 from typing import IO
 
 import fsspec
-from PIL import Image
-from pydantic_ai import Agent, BinaryContent, RunContext
 from configobj import ConfigObj
-from pydantic_ai import models
+from PIL import Image
+from pydantic_ai import Agent, BinaryContent, RunContext, models
+
+from imageutils.resize import ImageShrinker
+from imageutils.image_saver import save as save_image
 
 from .context import Context
 from .descriptions import Description
@@ -39,6 +42,7 @@ class ImageDescriber:
         return agent
 
     def __init__(self, deps: Context, conf: ConfigObj):
+        self.conf = conf
         self.deps = deps
         self.agent = ImageDescriber.get_agent(conf)
 
@@ -54,9 +58,87 @@ class ImageDescriber:
                 "Error processing mimetype for image file", exc_info=e)
             raise AiProcessingException() from e
 
+    def _merge_config_sections(self, subconfigs):
+        """ Merges a list of subconfigs together, such that keys in more specific subconfigs override keys in less specific subconfigs.
+
+        Constraint: subconfigs: [0...n] where 0  less specific than 1 ... n"""
+        match len(subconfigs):
+            case 0:
+                return {}
+            case 1:
+                return subconfigs[0]
+            case _:
+                return reduce(lambda merged, next: merged.update(next), subconfigs)
+
+    def _get_provider_config(self):
+        """ Retrieves the provider-specific configuration based on the model name. Merges less specific provider configs with more specific provider configs, such that configs for a specific model can be provided. This assumes that the - separator is used to override model settings for progressively deeper classes of model."""
+        model = self.conf.get('model')
+        if not model:
+            return
+        model_parts = model.split("-")
+        subconfigs = []
+        # model[:1] retreives up to but not including 1, thus we offset the
+        # range by 1 such that 0...n-1 becomes 1...n
+        for index in range(1, len(model_parts)+1):
+            model_prefix = "-".join(model_parts[:index])
+            subconfig = self.conf.get(model_prefix)
+            if subconfig:
+                subconfigs.append(subconfig)
+        return self._merge_config_sections(subconfigs)
+
+    def _resize_if_needed(self, image_bytes: bytes) -> bytes:
+        """
+        Resizes the image if needed based on model configuration.
+        """
+        provider_config = self._get_provider_config()
+        if not provider_config:
+            return image_bytes
+
+        # Check if resize is needed
+        resize_to = provider_config.get('resize_to')
+        if not resize_to:
+            return image_bytes
+
+        # Convert target size to float (MB)
+        try:
+            target_size_mb = float(resize_to)
+        except (TypeError, ValueError):
+            logger.warning("Invalid resize_to value in config: %s", resize_to)
+            return image_bytes
+
+        # Get current size in MB
+        current_size_mb = len(image_bytes) / (1024 * 1024)
+        logger.debug(f"Original image size: {current_size_mb:.2f}MB")
+
+        # Only resize if current size exceeds target
+        if current_size_mb <= target_size_mb:
+            logger.debug("Image already within size limits")
+            return image_bytes
+
+        # Initialize shrinker and load image
+        shrinker = ImageShrinker()
+        img = Image.open(BytesIO(image_bytes))
+
+        # Resize based on encoding type
+        use_base64 = provider_config.get('b64', False)
+        if use_base64:
+            resized_img = shrinker.resize_to_base64_size(img, target_size_mb)
+        else:
+            resized_img = shrinker.resize_to_filesize(img, target_size_mb)
+
+        # Convert back to bytes and verify size
+        output = BytesIO()
+        save_image(resized_img, output, quality=shrinker.quality)
+        result_bytes = output.getvalue()
+        result_size_mb = len(result_bytes) / (1024 * 1024)
+        logger.debug(f"Resized image size: {result_size_mb:.2f}MB")
+
+        return result_bytes
+
     async def describe_image(self, image_path: str) -> Description:
         with open(image_path, 'rb') as f:
             image_bytes = f.read()
+            image_bytes = self._resize_if_needed(image_bytes)
 
         response = await self.agent.run(
             [BinaryContent(
