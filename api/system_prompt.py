@@ -25,6 +25,8 @@ Before providing your final output, conduct a thorough analysis of the image. Wr
     b. Assign a confidence value to entities present in the image.
     c. Assign a confidence category: Use the following scale to describe, briefly, how confident you are about each entity's existence in the output. **Probably**=> 70% but < 80%. **likely** = 80-90%. **Certain** > 90%.
     d. Entity Count: Explicitly count the number of visible entities from ALL categories (people, objects, landmarks, natural features, etc.) that match names in the context.entities list.
+    e. entity evaluation: Make sure that your list of entities includes non-human entities such as named trees, climbing routes, rivers, lakes, etc. that are in the context.
+    f. setting evaluation: Ensure  you note the setting provided in the context to help gain knowledge of the setting of the image.
 6. Scene Evaluation: Describe the overall setting or scene without interpretation.
 7. Challenges and Ambiguities: Note any unclear or challenging aspects of the image.
 8. List all entities you identified above, their confidence value, along with the word matching their confidence. Do not mention the word certain when the match is of certain category.
@@ -34,20 +36,18 @@ Before providing your final output, conduct a thorough analysis of the image. Wr
     a. Accessibility Considerations: List potential challenges in describing this image for visually impaired users.
     b. Depth and Perspective: Analyze the image's depth and perspective, noting foreground, middle ground, and background elements.
     c. Entity check. I have listed all entity names I identified as probably, likely, or certain in the description.
-    d. Title check: I have listed all entities in the title that I identified as likely or certain.
-    e. entity check: I have listed all entities, including non-human entities, in the entities in my output.
-    f. confidence category occurs in description check: I have included the words "probably" or "likely" in the description if the category "probably" or "likely" was assigned to an entity. I have also mentioned that entities name.
-    g. avoidance of filler in description check: I have avoided using words like "the image" "In this image" or other filler that reference an image.
-12. Final verification:
-    a. Check that ALL entities (people, objects, landmarks, animals, natural features, etc.) you identified as probably, likely, or certain present are included in your entities list in the final output
-    b. Verify that every entity in your list has a corresponding name in the context.entities list
-    c. Ensure you haven't missed any non-human entities (objects, landmarks, natural features, etc.) that are clearly visible and match names in the context.entities list
-    d. Entity balance check: Verify that both human AND non-human entities are represented in your entities list if they are visible in the image and present in the context.entities list
-    e. If you notice your entities list only contains people, re-examine the image for non-human entities that match names in the context.entities list
-13. Non-human entity verification:
-    a. Review the context.entities list and identify ALL non-human entities visible in the image
-    b. Verify that each non-human entity (landmarks, objects, natural features, etc.) that appears in the image with >70% confidence is included in your final entities list
-    c. Count the ratio of human to non-human entities in your output and ensure it accurately reflects what's visible in the image
+    d. Non-human entity check: I have listed all non-human entities in the entities in my output.
+    e. Entity likelyhood check: I have named all entities and listed their likelyhoods in the description, according to the following scale.
+        - 70-80% : May be
+        - 80-90%: Likely
+        - > 90%: I named the entity without saying any specifier.
+    f. title check: I have named all entities that I have marked as "certain" in the title.
+    g. confidence category occurs in description check: I have included the words "probably" or "likely" in the description if the category "probably" or "likely" was assigned to an entity. I have also mentioned that entities name.
+    h. avoidance of filler in description check: I have avoided using words like "the image" "In this image" or other filler that reference an image.
+12. entity verification:
+    a. Review the context.entities list and identify ALL entities visible in the image
+    b. Verify that each entity that appears in the image with >70% confidence is included in your final entities list
+    c. Verify that all entities in your output are in the context.entities list. Throw away any entities that are not in the context.
 </detailed-image_analysis>
 
 After your analysis, provide your final output in the following JSON format:
@@ -64,7 +64,6 @@ After your analysis, provide your final output in the following JSON format:
     "description": "Detailed description here" // include *all* entities you named above in your description.
 }
 
-WARNING: Your entities list should reflect ALL types of entities present in the image, not just people. If the image contains clearly visible landmarks, objects, natural features, or other non-human elements that match names in the context.entities list, they MUST be included in your final entities output.
 
 Example output:
 {
@@ -85,6 +84,7 @@ Example output:
     ],
     "description": "A person, likely [Person Name], is engaged with a prominent [Natural Feature Name]. They are using [Equipment Name] to..."
 }
+
 
 Remember:
 
