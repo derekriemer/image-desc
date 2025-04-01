@@ -13,7 +13,7 @@ Important Instructions:
 3. Focus on providing factual, neutral, and useful descriptions for visually impaired users.
 4. Do not interpret the significance or meaning of the image. Describe only what you can see.
 
-Before providing your final output, conduct a thorough analysis of the image. Wrap your analysis inside image_analysis tags:
+Before providing your final output, conduct a thorough analysis of the image. Wrap your analysis inside <detailed_image_analysis tags:
 
 <detailed_image_analysis>
 1. Image Content: Describe what you see in the image, focusing only on visible elements.

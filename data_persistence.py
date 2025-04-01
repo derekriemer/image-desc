@@ -25,9 +25,9 @@ def sanatize(value):
     return value.replace('"', '""')
 
 
-def getPeople(people):
-    print(people)
-    return "\n".join([f"{p.name}, {float(p.confidence)*100}%" for p in people])
+def getEntities(entities):
+    print(entities)
+    return "\n".join([f"{p.name}, {float(p.confidence)*100}%" for p in entities])
 
 
 async def save_results(fn: str, results: List[Description]):
@@ -38,7 +38,7 @@ async def save_results(fn: str, results: List[Description]):
             for result in filter(None, results):
                 logger.info(f"Saving result: {result}")
                 await csvfile.write(
-                    F'"{sanatize(fn)}","{sanatize(result.title)}","{sanatize(getPeople(result.people))}","{sanatize(result.long_description)}"\n')
+                    F'"{sanatize(fn)}","{sanatize(result.title)}","{sanatize(getEntities(result.entities))}","{sanatize(result.long_description)}"\n')
 
 
 def load_progress():

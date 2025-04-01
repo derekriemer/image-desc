@@ -4,14 +4,14 @@ from typing import List
 from pydantic import BaseModel
 
 
-class Person(BaseModel):
+class Entity(BaseModel):
     name: str
     confidence: float
 
 
 class Description(BaseModel):
     title: str
-    people: List[Person]
+    entities: List[Entity]
     long_description: str
 
     @property
