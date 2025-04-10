@@ -4,8 +4,8 @@ Automatic image descriptions service: Describing images from specific events to 
 
 | **Author** | Derek Riemer |
 | **Status** | Draft |
-| **Creation Date**| Mar 23, 2025 |
-| **Prototype Date**| March 1, 2025 |
+| **Creation Date** | Mar 23, 2025 |
+| **Prototype Date** | March 1, 2025 |
 
 ## Background
 
