@@ -2,7 +2,7 @@
 
 Automatic image descriptions service: Describing images from specific events to the blind.
 
-| **Author** | Derek Riemer
+| **Author** | Derek Riemer |
 | **Status** | Draft |
 | **Creation Date**| Mar 23, 2025 |
 | **Prototype Date**| March 1, 2025 |
